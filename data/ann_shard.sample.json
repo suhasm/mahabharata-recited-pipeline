@@ -1,0 +1,27 @@
+[
+ {
+  "id": "ann_P16_adh001",
+  "meter": "gadya",
+  "padas": [
+   "श्रीमन्महाभारते मौसलपर्व",
+   "अथ प्रथमोऽध्यायः"
+  ],
+  "seed": 60,
+  "no_sandhi": true,
+  "out": "ann_P16_adh001.wav",
+  "parva": 16,
+  "adhyaya": 1
+ },
+ {
+  "id": "ann_P01_adh062",
+  "meter": "gadya",
+  "padas": [
+   "अथ द्विषष्टितमोऽध्यायः"
+  ],
+  "seed": 60,
+  "no_sandhi": true,
+  "out": "ann_P01_adh062.wav",
+  "parva": 1,
+  "adhyaya": 62
+ }
+]

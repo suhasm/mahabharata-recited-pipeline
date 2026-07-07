@@ -1,0 +1,12 @@
+# large model weights — ship via Git LFS or a separate release, not plain git
+*.pt
+*.pth
+# python
+__pycache__/
+*.pyc
+.venv/
+.ipynb_checkpoints/
+# os
+.DS_Store
+# NOTE: reference-bank WAVs (vagdhenu/src/reference_bank/*.wav) and the bell
+# (assets/*.wav) ARE intentionally tracked — they are small and essential.
