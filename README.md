@@ -25,7 +25,7 @@ data/
   rename_map.tsv              old_filename -> new_filename
   ann_shard.sample.json       example announcement shard
 assets/
-  bell_ref_short.wav          intro/outro bell  ← SEE rights note below
+  bell_ghanta_cc0.wav         intro/outro bell (CC0 — see BELL_PROVENANCE.md)
 ```
 
 ## Rights & provenance (read before redistributing)
@@ -33,9 +33,10 @@ Three layers apply — see the License section of `archive_org_metadata.md` and 
 `CLAUDE.md`:
 1. **Audio** (the recitation) — yours.
 2. **CE text** — the BORI critical edition is an editorial work; confirm your rights.
-3. **Bell sample** — currently extracted from a copyrighted commercial recording,
-   **not cleared for redistribution**. Replace with a cleared/self-recorded bell and
-   re-run the splice + mp3 stages before publishing.
+3. **Bell sample** — RESOLVED 2026-07-12: now a CC0 ghanta strike
+   (`assets/bell_ghanta_cc0.wav`, see `assets/BELL_PROVENANCE.md`); the splice + mp3
+   stages have been re-run with it. The old uncleared bell survives only in git
+   history and as `.ORIG_uncleared` on the volume — do not redistribute those.
 
 ## What's included
 The full `vagdhenu/` render code and reference bank, all render/marker/naming/mp3

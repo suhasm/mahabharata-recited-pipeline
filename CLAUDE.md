@@ -31,10 +31,11 @@ All heavy work runs on a **RunPod pod** reached as compute target `ssh:runpod-a4
   - **The RunPod network volume mounted at `/workspace` has a hard quota of 100 GB.**
     `df`/`statvfs` report the shared MooseFS *pool* (100+ TB) — IGNORE that; the real
     limit is 100 GB. Hardlinks and even directory entries count against the quota.
-    (For reference, the compute POD this attaches to was named `convincing_harlequin_lark`,
-    pod id `h06ok7kx2f95fm`, type A40×4 — but that is the *pod*, not the volume. The
-    network volume is a separate RunPod resource; find its name/id in the RunPod
-    Storage dashboard, not from the pod identity.)
+    (RESOLVED 2026-07-12: the network volume is named `convincing_harlequin_lark`,
+    volume id `7w4yokjjfz`, datacenter **EU-SE-1**, since expanded to **250 GB**.
+    It persists independently of any pod; attach a SECURE-cloud pod in EU-SE-1 to it.
+    The A40×4 pod mentioned in older notes is long gone — any pod works for the CPU
+    stages (splice/rename/mp3); GPU only matters for Stages A/B renders.)
 
 ### Submitting jobs (via host.compute in the repl tool)
 ```python
@@ -161,12 +162,16 @@ vasantatilaka.
 ## 6. Bell provenance (RIGHTS — resolve before any redistribution)
 --------------------------------------------------------------------------------
 
-`assets/bell_ref_short.wav` (and the marked set that embeds it) uses a bell+tambura
-sample **extracted from a copyrighted commercial recording** ("Kanda_1_BK-005-
-Ayodhya_Varnavam", the reference the user liked). This is fine for private use but
-is **NOT cleared for distribution**. Before publishing (archive.org, etc.), replace
-it with a cleared or self-recorded bell and re-run Stage C (splice), Stage E (mp3).
-The splice/mp3 stages are idempotent and fast (~15 min total for all 1,995).
+**RESOLVED 2026-07-12.** The bell is now `assets/bell_ghanta_cc0.wav` — a real
+ghanta strike, **CC0** (freesound.org/s/274316), processed to 1.45 s with a natural
+damped decay (see `assets/BELL_PROVENANCE.md` and `scripts/bells/`). It was deployed
+to the volume as `markers/bell_ref_short.wav` and Stages C+D+E were re-run in full
+(see §10). The marked WAVs and MP3s are now fully redistributable (audio-rights-wise).
+
+The ORIGINAL bell ("Kanda_1_BK-005-Ayodhya_Varnavam", extracted from a copyrighted
+commercial recording, NOT cleared) is preserved as
+`markers/bell_ref_short.ORIG_uncleared.wav` on the volume and in this repo's git
+history — do not redistribute it or any audio embedding it (`adhyaya_mp3_OLD/`).
 
 --------------------------------------------------------------------------------
 ## 7. What is NOT in this repo (remote-only)
@@ -241,3 +246,32 @@ python scripts/naming/build_filenames.py mahabharata-align-copy data/mbh_adhyaya
 # 3. if re-belling: replace assets/bell_ref_short.wav, then on the pod re-run
 #    splice_par_launch.sh  (Stage C) and mp3_launch.sh (Stage E) — both idempotent.
 ```
+
+--------------------------------------------------------------------------------
+## 10. 2026-07-12 re-splice run record (bell replacement)
+--------------------------------------------------------------------------------
+
+Executed by a Claude session from the production Mac; total compute ≈ $2.
+
+  1. Attached a SECURE A5000 pod (EU-SE-1, $0.27/hr) to the network volume.
+     Driven over RunPod's SSH proxy (`ssh -tt <podHostId>@ssh.runpod.io`; commands
+     piped via stdin — the proxy ignores remote-command args and has no scp; bulk
+     files move via `runpodctl send/receive`, base64-heredoc for small pushes).
+  2. Backed up the old bell (`markers/bell_ref_short.ORIG_uncleared.wav`), installed
+     the CC0 ghanta as `markers/bell_ref_short.wav`.
+  3. Cleared `adhyaya_marked/`, parked the old MP3s as `adhyaya_mp3_OLD/`
+     (deletion pending owner decision), verified 1,995 op_ + 1,995 cl_ announcement
+     clips present.
+  4. Ran `scripts/markers/run_all.sh` (splice → rename → mp3, absolute env paths,
+     detached with setsid). Wall clock ~35 min. All stages logged in
+     `markers/{splice_par_*,mp3_enc_*}.log` + `run_all.log`.
+  5. Verified 1,995/1,995 MP3s name-exact against `rename_map.tsv`; pulled the set
+     via runpodctl (10 GB, ~35 min). Copies: production Mac
+     `~/mbharchive/mbh_mp3_newbell/` and Synology `Sanskrit AV/mahabharata tts/`.
+  6. Terminated the pod. The volume retains: `wavs/` (77,889 verse clips),
+     `adhyaya/` (bare concats), `adhyaya_marked/` (NEW-bell WAV masters, 75 GB),
+     `adhyaya_mp3/` (NEW-bell MP3s), `adhyaya_mp3_OLD/` (UNCLEARED-bell MP3s).
+
+Pitfall found this run: a first rebuild attempt used a naive bell→verses→bell
+format from memory instead of reading this file — ALWAYS follow §4's stage list;
+the announcements and colophons are integral to the product.
